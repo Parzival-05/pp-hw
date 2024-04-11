@@ -1,0 +1,3 @@
+[submodule "CGOL-Pthread-Parallelization"]
+	path = CGOL-Pthread-Parallelization
+	url = https://github.com/Parzival-05/CGOL-Pthread-Parallelization

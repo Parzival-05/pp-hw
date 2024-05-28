@@ -19,9 +19,12 @@ class OptimisticTree<K : Comparable<K>, V> :
             node.lockNode()
             return Pair(Optional.of(node), Optional.ofNullable(parentNode))
         } else {
-            val child = node.getChild(key)
+            val child = node.getChild(key) {
+                if (it == null) {
+                    node.lockNode()
+                }
+            }
             return if (child == null) {
-                node.lockNode()
                 Pair(Optional.empty(), Optional.of(node))
             } else {
                 this.findNodeAndParent(child, node, key)
@@ -44,7 +47,7 @@ class OptimisticTree<K : Comparable<K>, V> :
         } else {
             val child = node.getChild(key)
             return if (child == null) {
-                false
+                node.isLocked()
             } else {
                 this.checkNodeAndParentAfterLock(child, node, key)
             }

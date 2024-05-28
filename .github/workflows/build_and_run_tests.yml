@@ -16,14 +16,15 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Build with Gradle
         run: |
           ./gradlew build
 
       - name: Upload build artifacts
+        if: success() || failure()
         uses: actions/upload-artifact@v4
         with:
           name: Package
-          path: build/tests-reports
+          path: build/reports

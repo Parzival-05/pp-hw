@@ -47,7 +47,7 @@ abstract class AbstractAccuratelySynchronizedTree<K : Comparable<K>, V, NodeT : 
     }
 
     // ---------------------------------- delete ----------------------------------
-    override fun delete1Children(
+    override fun deleteZeroOrOneChild(
         objectiveNode: NodeT,
         parentOfObjectiveNode: NodeT?,
         left: NodeT?,
@@ -65,7 +65,7 @@ abstract class AbstractAccuratelySynchronizedTree<K : Comparable<K>, V, NodeT : 
         return
     }
 
-    override fun delete2Children(objectiveNode: NodeT, parentOfObjectiveNode: NodeT?, left: NodeT, right: NodeT) {
+    override fun deleteTwoChildren(objectiveNode: NodeT, parentOfObjectiveNode: NodeT?, left: NodeT, right: NodeT) {
         left.lockNode()
         right.lockNode()
         if (parentOfObjectiveNode != null) {
@@ -101,9 +101,9 @@ abstract class AbstractAccuratelySynchronizedTree<K : Comparable<K>, V, NodeT : 
             @Suppress("UNCHECKED_CAST") val left = objectiveNode.left as NodeT?
             @Suppress("UNCHECKED_CAST") val right = objectiveNode.right as NodeT?
             if (left == null || right == null) {
-                this.delete1Children(objectiveNode, parentOfObjectiveNode, left, right, key)
+                this.deleteZeroOrOneChild(objectiveNode, parentOfObjectiveNode, left, right, key)
             } else {
-                this.delete2Children(objectiveNode, parentOfObjectiveNode, left, right)
+                this.deleteTwoChildren(objectiveNode, parentOfObjectiveNode, left, right)
             }
         }
     }

@@ -29,9 +29,6 @@ open class FineGrainedNode<K : Comparable<K>, V>(
         return node
     }
 
-    override fun getChild(key: K, cont: (AbstractNode<K, V>?) -> Unit): FineGrainedNode<K, V>? {
-        val node = super.getChild(key, cont) as FineGrainedNode<K, V>?
-        cont(node)
-        return node
-    }
+    override fun getChild(key: K, cont: (AbstractNode<K, V>?) -> Unit): FineGrainedNode<K, V>? =
+        super.getChild(key, cont) as FineGrainedNode<K, V>?
 }

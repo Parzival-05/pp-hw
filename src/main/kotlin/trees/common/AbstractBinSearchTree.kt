@@ -74,7 +74,7 @@ abstract class AbstractBinSearchTree<K : Comparable<K>, V, NodeT : AbstractNode<
     }
     // ---------------------------------- delete ----------------------------------
 
-    open fun delete1Children(
+    open fun deleteZeroOrOneChild(
         objectiveNode: NodeT,
         parentOfObjectiveNode: NodeT?,
         left: NodeT?,
@@ -83,14 +83,14 @@ abstract class AbstractBinSearchTree<K : Comparable<K>, V, NodeT : AbstractNode<
     ) {
         val newNode = (left ?: right)
         if (parentOfObjectiveNode == null) {
-            this.root = newNode as NodeT
+            this.root = newNode
         } else {
             parentOfObjectiveNode.setChild(key, newNode)
         }
         return
     }
 
-    open fun delete2Children(objectiveNode: NodeT, parentOfObjectiveNode: NodeT?, left: NodeT, right: NodeT) {
+    open fun deleteTwoChildren(objectiveNode: NodeT, parentOfObjectiveNode: NodeT?, left: NodeT, right: NodeT) {
         if (parentOfObjectiveNode != null) {
             parentOfObjectiveNode.setLeftChild(left)
         } else {
@@ -115,9 +115,9 @@ abstract class AbstractBinSearchTree<K : Comparable<K>, V, NodeT : AbstractNode<
             @Suppress("UNCHECKED_CAST") val left = objectiveNode.left as NodeT?
             @Suppress("UNCHECKED_CAST") val right = objectiveNode.right as NodeT?
             return if (left == null || right == null) {
-                this.delete1Children(objectiveNode, parentOfObjectiveNode, left, right, key)
+                this.deleteZeroOrOneChild(objectiveNode, parentOfObjectiveNode, left, right, key)
             } else {
-                this.delete2Children(objectiveNode, parentOfObjectiveNode, left, right)
+                this.deleteTwoChildren(objectiveNode, parentOfObjectiveNode, left, right)
             }
         }
     }

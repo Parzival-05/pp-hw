@@ -98,9 +98,9 @@ class OptimisticTree<K : Comparable<K>, V> :
             val left = objectiveNode.getLeftChild()
             val right = objectiveNode.getRightChild()
             return if (left == null || right == null) {
-                this.delete1Children(objectiveNode, parentOfObjectiveNode, left, right, key)
+                this.deleteZeroOrOneChild(objectiveNode, parentOfObjectiveNode, left, right, key)
             } else {
-                this.delete2Children(objectiveNode, parentOfObjectiveNode, left, right)
+                this.deleteTwoChildren(objectiveNode, parentOfObjectiveNode, left, right)
                 objectiveNode.unlockNode()
             }
         }

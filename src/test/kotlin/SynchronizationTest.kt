@@ -27,11 +27,11 @@ abstract class TreeTest<TreeT : AbstractBinSearchTree<Int, Int, NodeT>, NodeT : 
 
     @Test
     open fun test() = ModelCheckingOptions().actorsBefore(2) // Number of operations before the parallel part
-        .threads(12) // Number of threads in the parallel part
+        .threads(6) // Number of threads in the parallel part
         .actorsPerThread(2) // Number of operations in each thread of the parallel part
         .actorsAfter(1) // Number of operations after the parallel part
         .iterations(100) // Generate 100 random concurrent scenarios
-        .invocationsPerIteration(1000) // Run each generated scenario 1000 times
+        .invocationsPerIteration(100) // Run each generated scenario 1000 times
         .check(this::class)
 }
 

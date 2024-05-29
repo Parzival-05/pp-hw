@@ -14,6 +14,11 @@ class OptimisticNode<K : Comparable<K>, V>(
         super.getRightChild() as OptimisticNode<K, V>?
 
 
-    override fun getChild(key: K, cont: (AbstractNode<K, V>?) -> Unit): OptimisticNode<K, V>? =
-        super.getChild(key, cont) as OptimisticNode<K, V>?
+    override fun getChild(
+        key: K,
+        parentNode: AbstractNode<K, V>?,
+        cont: (child: AbstractNode<K, V>?, node: AbstractNode<K, V>, parentNode: AbstractNode<K, V>?) -> Unit
+    ): OptimisticNode<K, V>? = super.getChild(key, parentNode, cont) as OptimisticNode<K, V>?
+
 }
+

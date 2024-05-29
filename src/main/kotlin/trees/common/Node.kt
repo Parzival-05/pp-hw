@@ -7,9 +7,8 @@ open class Node<K : Comparable<K>, V>(
     override var value: V,
 ) : AbstractNode<K, V>(key, value) {
     // ---------------------------------- getters ----------------------------------
-    override fun getChild(key: K, cont: (AbstractNode<K, V>?) -> Unit): Node<K, V>? {
-        val node = super.getChild(key, cont) as Node<K, V>?
-        cont(node)
-        return node
-    }
+    override fun getChild(
+        key: K, parentNode: AbstractNode<K, V>?,
+        cont: (child: AbstractNode<K, V>?, node: AbstractNode<K, V>, parentNode: AbstractNode<K, V>?) -> Unit
+    ): Node<K, V>? = super.getChild(key, parentNode, cont) as Node<K, V>?
 }

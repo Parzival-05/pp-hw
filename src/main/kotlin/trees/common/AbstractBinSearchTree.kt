@@ -6,20 +6,30 @@ import kotlin.jvm.optionals.getOrNull
 
 abstract class AbstractBinSearchTree<K : Comparable<K>, V, NodeT : AbstractNode<K, V>> {
     open var root: NodeT? = null
+
     // ---------------------------------- find ----------------------------------
+    open fun foundObjectiveNode(objectiveNode: NodeT?, parentNode: NodeT?) = Unit
+    open fun foundNextChildToCheck(child: NodeT?, node: NodeT, parentNode: NodeT?) = Unit
 
     /** Finding from some node */
     open fun findNodeAndParent(
-        node: NodeT,
+        node: NodeT?,
         parentNode: NodeT?,
         key: K
     ): Pair<Optional<NodeT>, Optional<NodeT>> {
-        val thisKey = node.getKeyValue().first
-        if (thisKey == key) {
-            return Pair(Optional.of(node), Optional.ofNullable(parentNode))
+        val thisKey = node?.getKeyValue()?.first
+        if (thisKey == null || thisKey == key) {
+            this.foundObjectiveNode(node, parentNode)
+            return Pair(Optional.ofNullable(node), Optional.ofNullable(parentNode))
         } else {
             @Suppress("UNCHECKED_CAST") val child =
-                node.getChild(key) as NodeT? // bin tree invariant: children of node with type A has only A type
+                node.getChild(key, parentNode) { a, b, c ->
+                    this.foundNextChildToCheck(
+                        a as NodeT?,
+                        b as NodeT,
+                        c as NodeT?
+                    )
+                } as NodeT?
             return if (child == null) {
                 Pair(Optional.empty(), Optional.of(node))
             } else {
@@ -32,12 +42,11 @@ abstract class AbstractBinSearchTree<K : Comparable<K>, V, NodeT : AbstractNode<
     open fun findNodeAndParent(
         key: K
     ): Pair<Optional<NodeT>, Optional<NodeT>>? {
-        val root = this.root ?: return null
-        return this.findNodeAndParent(root, null, key)
+        return this.findNodeAndParent(this.root, null, key)
     }
 
     open fun find(key: K): V? {
-        val root = this.root ?: return null
+        val root = this.root
         val nodeAndParent = this.findNodeAndParent(root, null, key)
         val (objectiveNodeOptional, parentOfObjectiveNodeOptional) = nodeAndParent
         parentOfObjectiveNodeOptional.getOrNull()
@@ -45,7 +54,7 @@ abstract class AbstractBinSearchTree<K : Comparable<K>, V, NodeT : AbstractNode<
     }
 
     // ---------------------------------- insert ----------------------------------
-    abstract fun constructNode(key: K, value: V): AbstractNode<K, V>
+    abstract fun constructNode(key: K, value: V): NodeT
     protected open fun insert(parentNode: NodeT?, node: NodeT) {
         if (parentNode == null) {
             this.root = node
@@ -63,7 +72,7 @@ abstract class AbstractBinSearchTree<K : Comparable<K>, V, NodeT : AbstractNode<
 
     open fun insert(key: K, value: V): Boolean {
         val nodeAndParent = this.findNodeAndParent(key)
-        @Suppress("UNCHECKED_CAST") val nodeToInsert = constructNode(key, value) as NodeT
+        val nodeToInsert = constructNode(key, value)
         return if (nodeAndParent == null) {
             this.root = nodeToInsert
             true

@@ -7,25 +7,14 @@ import kotlin.jvm.optionals.getOrNull
 class FineGrainedTree<K : Comparable<K>, V> :
     AbstractAccuratelySynchronizedTree<K, V, FineGrainedNode<K, V>>() {
     // ---------------------------------- find ----------------------------------
-    override tailrec fun findNodeAndParent(
+    override fun foundObjectiveNode(objectiveNode: FineGrainedNode<K, V>?, parentNode: FineGrainedNode<K, V>?) = Unit
+
+    override fun foundNextChildToCheck(
+        child: FineGrainedNode<K, V>?,
         node: FineGrainedNode<K, V>,
-        parentNode: FineGrainedNode<K, V>?,
-        key: K
-    ): Pair<Optional<FineGrainedNode<K, V>>, Optional<FineGrainedNode<K, V>>> {
-        val thisKey = node.getKeyValue().first
-        if (thisKey == key) {
-            return Pair(Optional.of(node), Optional.ofNullable(parentNode))
-        } else {
-            val child =
-                node.getChild(key) {
-                    parentNode?.unlockNode() ?: this.unlockTree()
-                }
-            return if (child == null) {
-                Pair(Optional.empty(), Optional.of(node))
-            } else {
-                this.findNodeAndParent(child, node, key)
-            }
-        }
+        parentNode: FineGrainedNode<K, V>?
+    ) {
+        parentNode?.unlockNode() ?: this.unlockTree()
     }
 
     override fun findNodeAndParent(key: K): Pair<Optional<FineGrainedNode<K, V>>, Optional<FineGrainedNode<K, V>>>? {
@@ -33,6 +22,17 @@ class FineGrainedTree<K : Comparable<K>, V> :
         val root = this.root ?: return null
         root.lockNode()
         return this.findNodeAndParent(root, null, key)
+    }
+
+    // ---------------------------------- delete ----------------------------------
+    override fun deleteTwoChildren(
+        objectiveNode: FineGrainedNode<K, V>,
+        parentOfObjectiveNode: FineGrainedNode<K, V>?,
+        left: FineGrainedNode<K, V>,
+        right: FineGrainedNode<K, V>
+    ) {
+        left.lockNode()
+        return super.deleteTwoChildren(objectiveNode, parentOfObjectiveNode, left, right)
     }
 
     // ---------------------------------- insert ----------------------------------
@@ -50,5 +50,4 @@ class FineGrainedTree<K : Comparable<K>, V> :
     }
 
     override fun constructNode(key: K, value: V): FineGrainedNode<K, V> = FineGrainedNode(key, value)
-
 }

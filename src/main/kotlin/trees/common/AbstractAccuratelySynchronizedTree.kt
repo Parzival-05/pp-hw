@@ -1,6 +1,5 @@
 package org.sbt.trees.common
 
-import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 abstract class AbstractAccuratelySynchronizedTree<K : Comparable<K>, V, NodeT : AbstractAccuratelySynchronizedNode<K, V>> :
@@ -9,9 +8,6 @@ abstract class AbstractAccuratelySynchronizedTree<K : Comparable<K>, V, NodeT : 
     open fun isLocked(): Boolean = lock.value
 
     // ---------------------------------- find ----------------------------------
-    abstract override fun findNodeAndParent(
-        key: K
-    ): Pair<Optional<NodeT>, Optional<NodeT>>?
 
     /** finds value of node with key = [key] and unlocks node with its parent */
     override fun find(key: K): V? {
@@ -102,7 +98,6 @@ abstract class AbstractAccuratelySynchronizedTree<K : Comparable<K>, V, NodeT : 
             if (left == null || right == null) {
                 this.deleteZeroOrOneChild(objectiveNode, parentOfObjectiveNode, left, right, key)
             } else {
-                left.lockNode()
                 this.deleteTwoChildren(objectiveNode, parentOfObjectiveNode, left, right)
             }
         }

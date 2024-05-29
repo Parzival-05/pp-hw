@@ -9,32 +9,6 @@ abstract class AbstractNode<K : Comparable<K>, V>(
     open var left: AbstractNode<K, V>? = null
     open var right: AbstractNode<K, V>? = null
 
-    // ---------------------------------- insert ----------------------------------
-    open fun insert(node: AbstractNode<K, V>): Boolean {
-        val thisKey = this.getKeyValue().first
-        val nodeKey = node.getKeyValue().first
-        if (thisKey == nodeKey) {
-            return false
-        } else {
-            val childNode = if (thisKey > nodeKey) {
-                val left = this.getLeftChild()
-                if (left == null) {
-                    this.setLeftChild(node)
-                    return true
-                }
-                left
-            } else {
-                val right = this.getRightChild()
-                if (right == null) {
-                    this.setRightChild(node)
-                    return true
-                }
-                right
-            }
-            return childNode.insert(node)
-        }
-    }
-
     // ---------------------------------- getters & setters ----------------------------------
     open fun getLeftChild(): AbstractNode<K, V>? {
         return this.left
@@ -43,7 +17,6 @@ abstract class AbstractNode<K : Comparable<K>, V>(
     open fun getRightChild(): AbstractNode<K, V>? {
         return this.right
     }
-
 
     open fun setLeftChild(node: AbstractNode<K, V>?) {
         this.left = node
@@ -63,7 +36,11 @@ abstract class AbstractNode<K : Comparable<K>, V>(
      * @return if ([key] < [this.getKey()]) then (this.left) else if
      *     ([key] > [this.getKey()]) then this.right else throw UnexpectedState
      */
-    open fun getChild(key: K, cont: (AbstractNode<K, V>?) -> Unit = {}): AbstractNode<K, V>? {
+    open fun getChild(
+        key: K,
+        parentNode: AbstractNode<K, V>? = null,
+        cont: (child: AbstractNode<K, V>?, node: AbstractNode<K, V>, parentNode: AbstractNode<K, V>?) -> Unit = { _, _, _ -> }
+    ): AbstractNode<K, V>? {
         val thisKey = this.key
         val node = if (key == thisKey) {
             throw UnexpectedState("Son and its parent have the same keys")
@@ -72,7 +49,7 @@ abstract class AbstractNode<K : Comparable<K>, V>(
         } else {
             this.getRightChild()
         }
-        cont(node)
+        cont(node, this, parentNode)
         return node
     }
 

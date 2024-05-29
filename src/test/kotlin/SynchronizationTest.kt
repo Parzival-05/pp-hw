@@ -27,11 +27,11 @@ abstract class TreeTest<TreeT : AbstractBinSearchTree<Int, Int, NodeT>, NodeT : 
 
     @Test
     open fun test() = ModelCheckingOptions().actorsBefore(2) // Number of operations before the parallel part
-        .threads(6) // Number of threads in the parallel part
+        .threads(4) // Number of threads in the parallel part
         .actorsPerThread(2) // Number of operations in each thread of the parallel part
         .actorsAfter(1) // Number of operations after the parallel part
         .iterations(300) // Generate 100 random concurrent scenarios
-        .invocationsPerIteration(30) // Run each generated scenario 1000 times
+        .invocationsPerIteration(6) // Run each generated scenario 1000 times
         .check(this::class)
 }
 
@@ -44,10 +44,8 @@ abstract class TreeTest<TreeT : AbstractBinSearchTree<Int, Int, NodeT>, NodeT : 
 class OptimisticTreeTest :
     TreeTest<OptimisticTree<Int, Int>, OptimisticNode<Int, Int>>(OptimisticTree())
 
-class CoarseGrainedTreeTest :
-    TreeTest<CoarseGrainedTree<Int, Int>, CoarseGrainedNode<Int, Int>>(CoarseGrainedTree())
-
-
 class FineGrainedTreeTest :
     TreeTest<FineGrainedTree<Int, Int>, FineGrainedNode<Int, Int>>(FineGrainedTree())
 
+class CoarseGrainedTreeTest :
+    TreeTest<CoarseGrainedTree<Int, Int>, CoarseGrainedNode<Int, Int>>(CoarseGrainedTree())

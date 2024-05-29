@@ -35,21 +35,19 @@ class OptimisticTree<K : Comparable<K>, V> :
     private fun checkNodeAndParentAfterLock(
         node: OptimisticNode<K, V>,
         parentNode: OptimisticNode<K, V>?,
-        key: K
+        key: K,
+        expectedNode: OptimisticNode<K, V>?,
+        expectedParentNode: OptimisticNode<K, V>?
     ): Boolean {
         val thisKey = node.getKeyValue().first
         if (thisKey == key) {
-            return if (parentNode == null) {
-                this.isLocked() && node.isLocked()
-            } else {
-                parentNode.isLocked() && node.isLocked()
-            }
+            return expectedNode == node && expectedParentNode == parentNode
         } else {
             val child = node.getChild(key)
             return if (child == null) {
-                node.isLocked()
+                expectedNode == null && expectedParentNode == node
             } else {
-                this.checkNodeAndParentAfterLock(child, node, key)
+                this.checkNodeAndParentAfterLock(child, node, key, expectedNode, expectedParentNode)
             }
         }
     }
@@ -60,14 +58,13 @@ class OptimisticTree<K : Comparable<K>, V> :
     ): Pair<Optional<OptimisticNode<K, V>>, Optional<OptimisticNode<K, V>>>? {
         val root = this.root ?: return null
         while (true) {
-            val res = this.findNodeAndParent(root, null, key)
-            val isInTree = checkNodeAndParentAfterLock(root, null, key)
+            val (objectiveNodeOptional, parentOfObjectiveNodeOptional) = this.findNodeAndParent(root, null, key)
+            val parentOfObjectiveNode = parentOfObjectiveNodeOptional.getOrNull()
+            val objectiveNode = objectiveNodeOptional.getOrNull()
+            val isInTree = checkNodeAndParentAfterLock(root, null, key, objectiveNode, parentOfObjectiveNode)
             if (isInTree) {
-                return res
+                return Pair(objectiveNodeOptional, parentOfObjectiveNodeOptional)
             } else {
-                val (objectiveNodeOptional, parentOfObjectiveNodeOptional) = res
-                val parentOfObjectiveNode = parentOfObjectiveNodeOptional.getOrNull()
-                val objectiveNode = objectiveNodeOptional.getOrNull()
                 parentOfObjectiveNode?.unlockNode() ?: this.unlockTree()
                 objectiveNode?.unlockNode()
             }
@@ -119,7 +116,7 @@ class OptimisticTree<K : Comparable<K>, V> :
             true
         } else {
             val (objectiveNode, parentNodeOptional) = nodeAndParent
-            this.insert(objectiveNode.getOrNull(), parentNodeOptional.get(), nodeToInsert)
+            this.insert(objectiveNode.getOrNull(), parentNodeOptional.getOrNull(), nodeToInsert)
         }
     }
 

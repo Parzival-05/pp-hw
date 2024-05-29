@@ -66,7 +66,6 @@ abstract class AbstractAccuratelySynchronizedTree<K : Comparable<K>, V, NodeT : 
     }
 
     override fun deleteTwoChildren(objectiveNode: NodeT, parentOfObjectiveNode: NodeT?, left: NodeT, right: NodeT) {
-        left.lockNode()
         right.lockNode()
         if (parentOfObjectiveNode != null) {
             parentOfObjectiveNode.setLeftChild(left)
@@ -103,6 +102,7 @@ abstract class AbstractAccuratelySynchronizedTree<K : Comparable<K>, V, NodeT : 
             if (left == null || right == null) {
                 this.deleteZeroOrOneChild(objectiveNode, parentOfObjectiveNode, left, right, key)
             } else {
+                left.lockNode()
                 this.deleteTwoChildren(objectiveNode, parentOfObjectiveNode, left, right)
             }
         }

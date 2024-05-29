@@ -31,7 +31,7 @@ abstract class TreeTest<TreeT : AbstractBinSearchTree<Int, Int, NodeT>, NodeT : 
         .actorsPerThread(2) // Number of operations in each thread of the parallel part
         .actorsAfter(1) // Number of operations after the parallel part
         .iterations(300) // Generate 100 random concurrent scenarios
-        .invocationsPerIteration(6) // Run each generated scenario 1000 times
+        .invocationsPerIteration(30) // Run each generated scenario 1000 times
         .check(this::class)
 }
 
@@ -41,6 +41,9 @@ abstract class TreeTest<TreeT : AbstractBinSearchTree<Int, Int, NodeT>, NodeT : 
 //class BinSearchTreeTest :
 //    TreeTest<BinSearchTree<Int, Int>, Node<Int, Int>>(BinSearchTree())
 
+class OptimisticTreeTest :
+    TreeTest<OptimisticTree<Int, Int>, OptimisticNode<Int, Int>>(OptimisticTree())
+
 class CoarseGrainedTreeTest :
     TreeTest<CoarseGrainedTree<Int, Int>, CoarseGrainedNode<Int, Int>>(CoarseGrainedTree())
 
@@ -48,5 +51,3 @@ class CoarseGrainedTreeTest :
 class FineGrainedTreeTest :
     TreeTest<FineGrainedTree<Int, Int>, FineGrainedNode<Int, Int>>(FineGrainedTree())
 
-class OptimisticTreeTest :
-    TreeTest<OptimisticTree<Int, Int>, OptimisticNode<Int, Int>>(OptimisticTree())
